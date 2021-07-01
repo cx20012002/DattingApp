@@ -23,6 +23,11 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(x => x.UseSqlite(_config.GetConnectionString("DefaultConnection")));
+            services.AddCors(x =>
+            {
+                x.AddPolicy("ThomasPolicy",
+                    x => { x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"); });
+            });
             services.AddControllers();
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "API", Version = "v1"}); });
         }
@@ -39,6 +44,8 @@ namespace API
 
             app.UseHttpsRedirection();
 
+            app.UseCors("ThomasPolicy");
+            
             app.UseRouting();
 
             app.UseAuthorization();
